@@ -3,7 +3,7 @@ Allows you to sync instances of LiveSplit across a network
 
 ## Installing
   - Close LiveSplit if it is open
-  - Download the [LiveSplit.NetworkSync.dll](https://github.com/ShootMe/LiveSplit.NetworkSync/raw/master/Components/LiveSplit.NetworkSync.dll) from the Releases page
+  - Download [LiveSplit.NetworkSync.dll](https://github.com/ShootMe/LiveSplit.NetworkSync/raw/master/Components/LiveSplit.NetworkSync.dll)
   - Place the file in your LiveSplit/Components folder
   - Open LiveSplit
   - Edit your layout
