@@ -125,32 +125,28 @@ namespace LiveSplit.NetworkSync {
 		}
 		private void TryStart() {
 			while (true) {
-				try {
-					if (!controller.IsRunning) {
-						SetStatus("Trying to start server on port " + Port);
-					}
-					bool started = controller.Start();
-					if (!started) {
-						SetStatus("Failed to start server on port " + Port + "\r\nTry running LiveSplit as administrator.");
-					}
-					Thread.Sleep(1000);
-				} catch { }
+				if (!controller.IsRunning) {
+					SetStatus("Trying to start server on port " + Port);
+				}
+				bool started = controller.Start();
+				if (!started) {
+					SetStatus("Failed to start server on port " + Port + "\r\nTry running LiveSplit as administrator.");
+				}
+				Thread.Sleep(1000);
 			}
 		}
 		private void TryConnect() {
 			while (true) {
-				try {
-					if (!controller.IsRunning) {
-						SetStatus("Trying to connect to " + IP + ":" + Port);
-					}
-					bool connected = controller.Connect();
-					if (connected) {
-						SetStatus("Connected to " + IP + ":" + Port);
-					} else {
-						SetStatus("Failed to connect to " + IP + ":" + Port);
-					}
-					Thread.Sleep(1000);
-				} catch { }
+				if (!controller.IsRunning) {
+					SetStatus("Trying to connect to " + IP + ":" + Port);
+				}
+				bool connected = controller.Connect();
+				if (connected) {
+					SetStatus("Connected to " + IP + ":" + Port);
+				} else {
+					SetStatus("Failed to connect to " + IP + ":" + Port);
+				}
+				Thread.Sleep(1000);
 			}
 		}
 		private void chkServer_CheckedChanged(object sender, EventArgs e) {

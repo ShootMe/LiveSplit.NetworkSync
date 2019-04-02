@@ -60,6 +60,7 @@ namespace LiveSplit.NetworkSync {
 					}
 					newConnection.Start(client);
 				} catch {
+					Thread.Sleep(100);
 				}
 			}
 			serverThread = null;
@@ -94,13 +95,13 @@ namespace LiveSplit.NetworkSync {
 			}
 		}
 		public void Stop() {
+			IsRunning = false;
 			if (server != null) {
 				try {
 					server.Stop();
 				} catch { }
 				server = null;
 			}
-			IsRunning = false;
 			if (serverThread != null) {
 				try {
 					serverThread.Abort();
@@ -163,7 +164,9 @@ namespace LiveSplit.NetworkSync {
 					if (parameters != null && parameters[0] != "*") {
 						Received?.Invoke(parameters);
 					}
-					waitEvent.WaitOne(8);
+					if (parameterQueue.Count <= 0) {
+						waitEvent.WaitOne(8);
+					}
 				}
 			} catch {
 			} finally {

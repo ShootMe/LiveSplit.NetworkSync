@@ -19,7 +19,7 @@ namespace LiveSplit.NetworkSync {
 		private SyncSettings settings;
 		private int currentSplit = -1, lastLogCheck;
 		private bool hasLog = false, lastLoading = false, shouldSend = true;
-		private TimeSpan lastLoadingTime;
+		private TimeSpan? lastLoadingTime;
 		public SyncComponent(LiveSplitState state) {
 			settings = new SyncSettings(controller);
 			controller.Received += Controller_Received;
@@ -56,9 +56,6 @@ namespace LiveSplit.NetworkSync {
 					case "pause":
 						Model.Pause();
 						break;
-					case "loading":
-						Model.CurrentState.IsGameTimePaused = bool.Parse(parameters[1]);
-						break;
 					case "skip":
 						Model.SkipSplit();
 						break;
@@ -66,7 +63,10 @@ namespace LiveSplit.NetworkSync {
 						Model.UndoSplit();
 						break;
 					case "gametime":
-						Model.CurrentState.SetGameTime(TimeSpan.FromTicks(long.Parse(parameters[1])));
+						lastLoading = bool.Parse(parameters[1]);
+						Model.CurrentState.IsGameTimePaused = lastLoading;
+						lastLoadingTime = parameters[2] == "null" ? null : (TimeSpan?)TimeSpan.FromTicks(long.Parse(parameters[2]));
+						Model.CurrentState.SetGameTime(lastLoadingTime);
 						break;
 				}
 			} catch { }
@@ -111,13 +111,12 @@ namespace LiveSplit.NetworkSync {
 			controller.Send(parameters);
 		}
 		public void Update(IInvalidator invalidator, LiveSplitState lvstate, float width, float height, LayoutMode mode) {
-			if (lastLoading != Model.CurrentState.IsGameTimePaused) {
-				lastLoading = Model.CurrentState.IsGameTimePaused;
-				SendInfo("Loading", lastLoading.ToString());
-			}
-			if (lastLoadingTime != Model.CurrentState.LoadingTimes) {
-				lastLoadingTime = Model.CurrentState.LoadingTimes;
-				SendInfo("GameTime", lastLoadingTime.Ticks.ToString());
+			if (controller.IsHosting) {
+				if (lastLoading != Model.CurrentState.IsGameTimePaused || (Model.CurrentState.GameTimePauseTime.HasValue && lastLoadingTime.HasValue && lastLoadingTime.Value != Model.CurrentState.GameTimePauseTime.Value) || Model.CurrentState.GameTimePauseTime.HasValue != lastLoadingTime.HasValue) {
+					lastLoading = Model.CurrentState.IsGameTimePaused;
+					lastLoadingTime = Model.CurrentState.GameTimePauseTime;
+					SendInfo("GameTime", lastLoading.ToString(), lastLoadingTime.HasValue ? lastLoadingTime.Value.Ticks.ToString() : "null");
+				}
 			}
 		}
 		public void OnReset(object sender, TimerPhase e) {
