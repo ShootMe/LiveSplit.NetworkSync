@@ -111,7 +111,7 @@ namespace LiveSplit.NetworkSync {
 			controller.Send(parameters);
 		}
 		public void Update(IInvalidator invalidator, LiveSplitState lvstate, float width, float height, LayoutMode mode) {
-			if (controller.IsHosting) {
+			if (!controller.IsHosting) {
 				if (lastLoading != Model.CurrentState.IsGameTimePaused || (Model.CurrentState.GameTimePauseTime.HasValue && lastLoadingTime.HasValue && lastLoadingTime.Value != Model.CurrentState.GameTimePauseTime.Value) || Model.CurrentState.GameTimePauseTime.HasValue != lastLoadingTime.HasValue) {
 					lastLoading = Model.CurrentState.IsGameTimePaused;
 					lastLoadingTime = Model.CurrentState.GameTimePauseTime;

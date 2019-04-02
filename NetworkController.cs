@@ -54,13 +54,24 @@ namespace LiveSplit.NetworkSync {
 					Thread newConnection = new Thread(Sync);
 					newConnection.IsBackground = true;
 					TcpClient client = server.AcceptTcpClient();
+					bool shouldClose = false;
 					lock (waitEvent) {
-						TotalConnections++;
-						newConnection.Name = TotalConnections.ToString();
+						if (TotalConnections >= 1) {
+							shouldClose = true;
+						} else {
+							TotalConnections++;
+							newConnection.Name = TotalConnections.ToString();
+						}
 					}
-					newConnection.Start(client);
+					if (shouldClose) {
+						try {
+							client.Close();
+						} catch { }
+					} else {
+						newConnection.Start(client);
+					}
 				} catch {
-					Thread.Sleep(100);
+					Thread.Sleep(10);
 				}
 			}
 			serverThread = null;
